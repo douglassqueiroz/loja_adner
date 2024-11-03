@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Usuário</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-light bg-light fixed-top">
+        <div class="container d-flex justify-content-between">
+            <a href="/" class="btn btn-secondary">Voltar</a>
+        </div>
+    </nav>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Gerenciar Usuários</h1>
+
+        <form method="POST" action="{{ url_for('usuario.criar_usuario') }}" class="border p-4 rounded shadow-sm">
+            <div class="mb-3">
+                <label for="username" class="form-label">Nome de Usuário:</label>
+                <input type="text" id="username" name="username" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="senha" class="form-label">Senha:</label>
+                <input type="password" id="senha" name="senha" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Criar Usuário</button>
+        </form>
+
+
+        <h2 class="mt-5">Lista de Usuários</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome de Usuário</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                <tr>
+                    <td>{{ usuario[0] }}</td>
+                    <td>{{ usuario[1] }}</td>
+                    <td>
+                        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalAtualizar{{ usuario[0] }}">Atualizar</button>
+                        <form action="{{ url_for('usuario.deletar_usuario', user_id=usuario[0]) }}" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-danger">Deletar</button>
+                        </form>
+                    </td>
+                </tr>
+
+                <!-- Modal para Atualizar Usuário -->
+                <div class="modal fade" id="modalAtualizar{{ usuario[0] }}" tabindex="-1" aria-labelledby="modalAtualizarLabel{{ usuario[0] }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalAtualizarLabel{{ usuario[0] }}">Atualizar Usuário</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form action="{{ url_for('usuario.atualizar_usuario', user_id=usuario[0]) }}" method="POST">
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label for="username" class="form-label">Nome de Usuário:</label>
+                                        <input type="text" id="username" name="username" class="form-control" value="{{ usuario[1] }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="senha" class="form-label">Senha:</label>
+                                        <input type="password" id="senha" name="senha" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="submit" class="btn btn-primary">Atualizar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

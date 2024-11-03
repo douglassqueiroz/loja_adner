@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Venda</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+</head>
+<body>
+    <!-- Barra de navegação fixa no topo -->
+    <nav class="navbar navbar-light bg-light fixed-top">
+        <div class="container d-flex justify-content-between">
+            <a href="/" class="btn btn-secondary">Voltar</a>
+            <a href="{{ url_for('vendas') }}" class="btn btn-info">Ver Relatório de Vendas</a>
+        </div>
+    </nav>
+
+    <!-- Conteúdo da página com espaçamento para a barra fixa -->
+    <div class="container mt-5 pt-5">
+        <h1>Registrar Venda</h1>
+        <form id="vendaForm">
+            <div class="mb-3">
+                <label for="produto" class="form-label">Produto</label>
+                <input type="text" class="form-control" id="produto" name="produto" required>
+            </div>
+            <div class="mb-3">
+                <label for="quantidade" class="form-label">Quantidade</label>
+                <input type="number" class="form-control" id="quantidade" name="quantidade" required>
+            </div>
+            <div class="mb-3">
+                <label for="preco" class="form-label">Preço</label>
+                <input type="number" step="0.01" class="form-control" id="preco" name="preco" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Registrar Venda</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("vendaForm").addEventListener("submit", async function(event) {
+            event.preventDefault();  // Evita o recarregamento da página
+            
+            const formData = new FormData(this);
+            const data = new URLSearchParams(formData);
+
+            try {
+                const response = await fetch("/registrar_venda", {
+                    method: "POST",
+                    body: data
+                });
+
+                if (response.ok) {
+                    alert("Venda registrada com sucesso!");  // Exibe o alerta
+                    location.reload();  // Recarrega a página
+                } else {
+                    alert("Erro ao registrar venda. Tente novamente.");
+                }
+            } catch (error) {
+                alert("Erro: Não foi possível registrar a venda.");
+            }
+        });
+    </script>
+</body>
+</html>
