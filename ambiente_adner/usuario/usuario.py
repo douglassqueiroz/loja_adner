@@ -1,12 +1,12 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from db import create_connection  # Verifique se a função está nomeada corretamente
+from db import create_connection, db_file  # Verifique se a função está nomeada corretamente
 
 # Cria um blueprint para o módulo de usuário
 usuario_bp = Blueprint('usuario', __name__)
 
 @usuario_bp.route('/criar_usuario', methods=['GET', 'POST'])
 def criar_usuario():
-    conn = create_connection()  # Certifique-se de que a conexão está sendo criada corretamente
+    conn = create_connection(db_file)  # Certifique-se de que a conexão está sendo criada corretamente
     cursor = conn.cursor()
 
     # Buscar usuários para listar
@@ -20,7 +20,7 @@ def criar_usuario():
         print(f"Senha: {senha}")
 
         try:
-            cursor.execute("INSERT INTO usuarios (username, senha) VALUES (%s, %s);", (username, senha))
+            cursor.execute("INSERT INTO usuarios (username, senha) VALUES (?, ?);", (username, senha))
             conn.commit()
             flash('Usuário criado com sucesso!', 'success')
             return redirect(url_for('usuario.criar_usuario'))  # Redireciona após sucesso
@@ -35,7 +35,7 @@ def criar_usuario():
 
 @usuario_bp.route('/usuarios', methods=['GET'])
 def listar_usuarios():
-    conn = create_connection()
+    conn = create_connection(db_file)
     cursor = conn.cursor()
 
     cursor.execute("SELECT id, username FROM usuarios;")
@@ -48,7 +48,7 @@ def listar_usuarios():
 
 @usuario_bp.route('/atualizar_usuario/<int:user_id>', methods=['GET', 'POST'])
 def atualizar_usuario(user_id):
-    conn = create_connection()
+    conn = create_connection(db_file)
     cursor = conn.cursor()
 
     if request.method == 'POST':
@@ -56,7 +56,7 @@ def atualizar_usuario(user_id):
         senha = request.form['senha']
         
         try:
-            cursor.execute("UPDATE usuarios SET username = %s, senha = %s WHERE id = %s;", (username, senha, user_id))
+            cursor.execute("UPDATE usuarios SET username = ?, senha = ? WHERE id = ?;", (username, senha, user_id))
             conn.commit()
             flash('Usuário atualizado com sucesso!', 'success')
             return redirect(url_for('usuario.listar_usuarios'))
@@ -67,7 +67,7 @@ def atualizar_usuario(user_id):
             cursor.close()
             conn.close()
     
-    cursor.execute("SELECT username, senha FROM usuarios WHERE id = %s;", (user_id,))
+    cursor.execute("SELECT username, senha FROM usuarios WHERE id = ?;", (user_id,))
     usuario = cursor.fetchone()
     cursor.close()
     conn.close()
@@ -76,11 +76,11 @@ def atualizar_usuario(user_id):
 
 @usuario_bp.route('/deletar_usuario/<int:user_id>', methods=['POST'])
 def deletar_usuario(user_id):
-    conn = create_connection()
+    conn = create_connection(db_file)
     cursor = conn.cursor()
 
     try:
-        cursor.execute("DELETE FROM usuarios WHERE id = %s;", (user_id,))
+        cursor.execute("DELETE FROM usuarios WHERE id = ?;", (user_id,))
         conn.commit()
         flash('Usuário deletado com sucesso!', 'success')
     except Exception as e:
