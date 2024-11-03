@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produtos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-light bg-light fixed-top">
+        <div class="container d-flex justify-content-between">
+            <a href="/" class="btn btn-secondary">Voltar</a>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCriarProduto">Registrar Novo Produto</button>
+        </div>
+    </nav>
+
+    <div class="container mt-5 pt-5">
+        <h1>Lista de Produtos</h1>
+        
+        <table class="table table-striped mt-3">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Descrição</th>
+                    <th>Preço</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for produto in produtos %}
+                    <tr>
+                        <td>{{ produto[0] }}</td>
+                        <td>{{ produto[1] }}</td>
+                        <td>{{ produto[2] }}</td>
+                        <td>R$ {{ produto[3] }}</td>
+                        <td>
+                            <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalEditarProduto{{ produto[0] }}">Alterar</button>
+                            <form method="POST" action="{{ url_for('produto.excluir_produto', id=produto[0]) }}" style="display:inline;">
+                                <button type="submit" class="btn btn-danger">Excluir</button>
+                            </form>
+                        </td>
+                    </tr>
+
+                    <!-- Modal para editar produto -->
+                    <div class="modal fade" id="modalEditarProduto{{ produto[0] }}" tabindex="-1" aria-labelledby="modalEditarProdutoLabel{{ produto[0] }}" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form method="POST" action="{{ url_for('produto.editar_produto', id=produto[0]) }}">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="modalEditarProdutoLabel{{ produto[0] }}">Alterar Produto</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label for="nome{{ produto[0] }}" class="form-label">Nome do Produto</label>
+                                            <input type="text" class="form-control" id="nome{{ produto[0] }}" name="nome" value="{{ produto[1] }}" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="descricao{{ produto[0] }}" class="form-label">Descrição</label>
+                                            <textarea class="form-control" id="descricao{{ produto[0] }}" name="descricao" required>{{ produto[2] }}</textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="preco{{ produto[0] }}" class="form-label">Preço</label>
+                                            <input type="number" step="0.01" class="form-control" id="preco{{ produto[0] }}" name="preco" value="{{ produto[3] }}" required>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-warning">Alterar Produto</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="modal fade" id="modalCriarProduto" tabindex="-1" aria-labelledby="modalCriarProdutoLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST" action="{{ url_for('produto.criar_produto') }}">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalCriarProdutoLabel">Registrar Produto</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="nome" class="form-label">Nome do Produto</label>
+                            <input type="text" class="form-control" id="nome" name="nome" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="descricao" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="descricao" name="descricao" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="preco" class="form-label">Preço</label>
+                            <input type="number" step="0.01" class="form-control" id="preco" name="preco" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Registrar Produto</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

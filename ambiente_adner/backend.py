@@ -3,14 +3,15 @@ from db import create_connection
 import psycopg2
 import base64, os
 from datetime import date
+from flask import Flask, jsonify
 from datetime import datetime
 from usuario.usuario import usuario_bp
-
+from produto.produto import produto_bp
 app = Flask(__name__)
 
 connection = create_connection()
 app.register_blueprint(usuario_bp)
-
+app.register_blueprint(produto_bp)
 # Quando precisar da conexão
 app.secret_key = base64.urlsafe_b64encode(os.urandom(32)).decode('utf-8')
 
@@ -77,9 +78,33 @@ def vendas():
     connection.close()
 
     return render_template('vendas.html', vendas=vendas_formatadas)
+
 @app.route('/registrar_venda', methods=['GET', 'POST'])
 def registrar_venda():
     # Aqui você pode adicionar a lógica para registrar uma venda
     return render_template('registrar_venda.html')
+
+@app.route('/produtos_pagina', methods=['GET'])
+def listar_produtos_json():  # Mantenha esse nome para a função, se você preferir
+    try:
+        conn = create_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute("SELECT id, nome FROM produtos;")
+        produtos = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        return jsonify(produtos)  # Retornar produtos como JSON
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/seguir_para_produtos')
+def produtos():
+    return render_template('produto.html')  # Inclua o caminho correto para o arquivo
+
+
+
 if __name__ == '__main__':
     app.run(debug=True)

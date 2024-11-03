@@ -12,6 +12,8 @@
         <div class="container d-flex justify-content-between">
             <a href="/" class="btn btn-secondary">Voltar</a>
             <a href="{{ url_for('vendas') }}" class="btn btn-info">Ver Relatório de Vendas</a>
+            <a href="{{ url_for('produtos') }}" class="btn btn-info">Ver Produtos</a>
+
         </div>
     </nav>
 
@@ -21,7 +23,9 @@
         <form id="vendaForm">
             <div class="mb-3">
                 <label for="produto" class="form-label">Produto</label>
-                <input type="text" class="form-control" id="produto" name="produto" required>
+                <select class="form-select" id="produto" name="produto" required>
+                    <option value="" disabled selected>Selecione um produto</option>
+                </select>
             </div>
             <div class="mb-3">
                 <label for="quantidade" class="form-label">Quantidade</label>
@@ -58,6 +62,21 @@
                 alert("Erro: Não foi possível registrar a venda.");
             }
         });
+        async function carregarProdutos() {
+            const response = await fetch('/produtos_pagina');  // Atualize a URL para a nova rota
+            const produtos = await response.json();
+            const selectProduto = document.getElementById('produto');
+
+            produtos.forEach(produto => {
+                const option = document.createElement('option');
+                option.value = produto[0];  // ID do produto
+                option.textContent = produto[1];  // Nome do produto
+                selectProduto.appendChild(option);
+            });
+        }
+
+        // Carregar produtos ao carregar a página
+        document.addEventListener('DOMContentLoaded', carregarProdutos);
     </script>
 </body>
 </html>
